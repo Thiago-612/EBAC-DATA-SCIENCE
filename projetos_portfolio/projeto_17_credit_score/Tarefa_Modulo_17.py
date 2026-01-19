@@ -628,15 +628,25 @@ tabela_comparacao = pd.concat([corr_trad, corr_enc], ignore_index=True)
 print("\n📊 Tabela comparativa de correlação com SCORE:\n")
 print(tabela_comparacao.to_string(index=False))
 
+print('\nVERIFICAÇÃO DO DATAFRAME APÓS CODIFICAÇÃO: \n')
+print(df_encoded.info())
+
 #SEPARAÇÃO BASE DE TREINO E TESTE
 """
 Análise:
 A variável credit score está desbalanceada acima de 7 vezes entre a maior e menor classe.
+Vazamento de dados na SCORE_NUM
 """
-x = df_encoded.drop('CREDIT SCORE_LE', axis=1)
+
+FEATURES = [
+    c for c in df_encoded.columns
+    if c not in ['CREDIT SCORE_LE', 'SCORE_NUM']
+]
+
+x = df_encoded[FEATURES]
 y = df_encoded['CREDIT SCORE_LE']
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42, stratify=y)
 
 print('\n Tamanho do x_train:', x_train.shape)
 print('\n Tamanho do y_train:', y_train.shape)
